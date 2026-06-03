@@ -2,7 +2,7 @@
 
 @section('content')
 
-    <h2 class="mb-4">Add Weather</h2>
+    <h2 class="mb-4">Dodaj Weather</h2>
 
     @if ($errors->any())
         <div class="alert alert-danger">
