@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\City;
 use App\Models\Weather;
 use Illuminate\Database\Seeder;
 
@@ -9,9 +10,9 @@ class UserWeatherSeeder extends Seeder
 {
     public function run(): void
     {
-        $city = $this->command->ask('Unesite ime grada');
+        $cityName = $this->command->ask('Unesite ime grada');
 
-        if ($city === null) {
+        if ($cityName === null) {
             $this->command->getOutput()->error("Morate unijeti ime grada");
             return;
         }
@@ -23,18 +24,26 @@ class UserWeatherSeeder extends Seeder
             return;
         }
 
-        $exists = Weather::where('city', $city)->exists();
+        $city = City::where('name', $cityName)->first();
+
+        if (!$city) {
+            $this->command->getOutput()->error("Grad ne postoji u bazi!");
+            return;
+        }
+
+        // 🔥 PROVJERA PO city_id
+        $exists = Weather::where('city_id', $city->id)->exists();
 
         if ($exists) {
-            $this->command->getOutput()->error("Grad već postoji u bazi!");
+            $this->command->getOutput()->error("Weather za taj grad već postoji!");
             return;
         }
 
         Weather::create([
-            'city' => $city,
+            'city_id' => $city->id,
             'temperature' => $temperature,
         ]);
 
-        $this->command->getOutput()->info("Uspjesno ste unijeli novi grad!");
+        $this->command->getOutput()->info("Uspješno ste unijeli novi weather zapis!");
     }
 }

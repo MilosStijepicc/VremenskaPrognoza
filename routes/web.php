@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\WeatherController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ForecastController;
 
 Route::get('/', function () {
     return redirect('/register');
@@ -32,6 +33,10 @@ Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])->prefix
 
     Route::post('/weather/delete/{id}', [WeatherController::class, 'destroy'])
         ->name('weather-destroy');
+
+    Route::get('/forecast/{city}', [ForecastController::class, 'index'])
+        ->name('forecast');
 });
+
 
 require __DIR__.'/auth.php';

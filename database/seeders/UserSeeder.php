@@ -11,8 +11,7 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        $amount = $this->command->ask('Koliko korisnika zelite da napravite', 500);
-        $password = $this->command->ask('Koja sifra treba da bude?', 123456);
+        $amount = $this->command->ask('Koliko usera zelite da napravite?', 100);
 
         $faker = Factory::create();
 
@@ -20,16 +19,25 @@ class UserSeeder extends Seeder
 
         for ($i = 0; $i < $amount; $i++) {
 
+            // ovdje sam napravio svakog 10 korisnika adminom zbog nekog ajda da kazemo realnog omjera
+            if ($i % 10 == 0) {
+                $role = 'admin';
+            } else {
+                $role = 'user';
+            }
+
             User::create([
                 'name' => $faker->name(),
                 'email' => $faker->unique()->safeEmail(),
-                'password' => Hash::make($password),
-                'role' => $faker->randomElement(['admin', 'user']),
+                'password' => Hash::make('123456'),
+                'role' => $role,
             ]);
 
             $this->command->getOutput()->progressAdvance();
         }
 
         $this->command->getOutput()->progressFinish();
+
+        $this->command->info("Kreirano {$amount} usera.");
     }
 }
