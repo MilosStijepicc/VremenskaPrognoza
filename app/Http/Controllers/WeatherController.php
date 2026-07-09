@@ -4,12 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Weather;
+use App\Models\City;
 
 class WeatherController extends Controller
 {
     public function index()
     {
-        $weather = Weather::all();
+        $weather = Weather::with('city')->get();
         return view('dashboard', compact('weather'));
     }
 
@@ -25,17 +26,25 @@ class WeatherController extends Controller
             'temperature' => 'required|numeric',
         ]);
 
-        $exists = Weather::whereRaw('LOWER(city) = ?', [strtolower($request->city)])
-            ->exists();
+        $city = City::whereRaw('LOWER(name) = ?', [strtolower($request->city)])
+            ->first();
+
+        if (!$city) {
+            return back()->withErrors([
+                'city' => 'Grad ne postoji u bazi!'
+            ]);
+        }
+
+        $exists = Weather::where('city_id', $city->id)->exists();
 
         if ($exists) {
             return back()->withErrors([
-                'city' => 'Grad već postoji!'
+                'city' => 'Weather za ovaj grad već postoji!'
             ]);
         }
 
         Weather::create([
-            'city' => $request->city,
+            'city_id' => $city->id,
             'temperature' => $request->temperature,
         ]);
 
@@ -44,25 +53,27 @@ class WeatherController extends Controller
 
     public function editList()
     {
-        $weather = Weather::all();
+        $weather = Weather::with('city')->get();
         return view('change-weather', compact('weather'));
     }
 
     public function edit($id)
     {
-        $weather = Weather::findOrFail($id);
+        $weather = Weather::with('city')->findOrFail($id);
         return view('edit-weather', compact('weather'));
     }
 
     public function update(Request $request, $id)
     {
         $request->validate([
-            'city' => 'required',
-            'temperature' => 'required'
+            'city' => 'required|string',
+            'temperature' => 'required|numeric',
         ]);
 
-        $exists = Weather::whereRaw('LOWER(city) = ?', [strtolower($request->city)])
-            ->where('id', '!=', $id)
+        $weather = Weather::with('city')->findOrFail($id);
+
+        $exists = City::whereRaw('LOWER(name) = ?', [strtolower($request->city)])
+            ->where('id', '!=', $weather->city_id)
             ->exists();
 
         if ($exists) {
@@ -70,15 +81,15 @@ class WeatherController extends Controller
                 'city' => 'Grad već postoji!'
             ]);
         }
-
-        $weather = Weather::findOrFail($id);
-
+        $weather->city->update([
+            'name' => $request->city,
+        ]);
         $weather->update([
-            'city' => $request->city,
             'temperature' => $request->temperature,
         ]);
 
-        return redirect()->route('weather-change')->with('success', 'Updated!');
+        return redirect()->route('weather-change')
+            ->with('success', 'Updated!');
     }
 
     public function destroy($id)

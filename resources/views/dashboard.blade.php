@@ -23,7 +23,7 @@
         @foreach($weather as $w)
             <tr>
                 <td>{{ $w->id }}</td>
-                <td>{{ $w->city }}</td>
+                <td>{{ $w->city->name }}</td>
                 <td>{{ $w->temperature }}°C</td>
             </tr>
         @endforeach

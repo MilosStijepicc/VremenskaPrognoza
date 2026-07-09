@@ -12,7 +12,7 @@
 
             <input type="text"
                    name="city"
-                   value="{{ old('city', $weather->city) }}"
+                   value="{{ old('city', $weather->city->name) }}"
                    class="form-control">
 
             @error('city')

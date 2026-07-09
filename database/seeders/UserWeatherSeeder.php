@@ -31,7 +31,6 @@ class UserWeatherSeeder extends Seeder
             return;
         }
 
-        // 🔥 PROVJERA PO city_id
         $exists = Weather::where('city_id', $city->id)->exists();
 
         if ($exists) {
