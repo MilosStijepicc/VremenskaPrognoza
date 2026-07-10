@@ -2,29 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Models\City;
 
 class ForecastController extends Controller
 {
-    public function index($city)
+    public function index(City $city)
     {
-        $forecasts = [
-            'beograd' => [12, 14, 16, 15, 13],
-            'sarajevo' => [8, 9, 11, 10, 7],
-        ];
+        $forecasts = $city->forecasts()->
+        orderBy('date')->get();
 
-        $cityKey = strtolower($city);
-
-        if (!isset($forecasts[$cityKey])) {
-            return view('forecast', [
-                'city' => $city,
-                'temps' => null
-            ]);
-        }
-
-        return view('forecast', [
-            'city' => $city,
-            'temps' => $forecasts[$cityKey]
-        ]);
+        return view('forecast', compact('city', 'forecasts'));
     }
 }

@@ -18,11 +18,19 @@ class ForecastSeeder extends Seeder
         foreach ($cities as $city) {
 
             for ($i = 0; $i < 5; $i++) {
+                $weatherType = Forecast::WEATHER_TYPES[rand(0, 2)];
+                $probability = null;
+
+                if($weatherType === 'rainy' || $weatherType === 'snowy') {
+                    $probability = rand(1, 100);
+                }
 
                 Forecast::create([
                     'city_id' => $city->id,
                     'temperature' => $faker->numberBetween(-15, 40),
                     'date' => now()->addDays($i)->toDateString(),
+                    'weather_type' => $weatherType,
+                    "probability" => $probability,
                 ]);
             }
         }

@@ -5,32 +5,60 @@
     <div class="container mt-5">
 
         <div class="card shadow-sm">
+
             <div class="card-header bg-primary text-white">
-                <h3 class="mb-0">Forecast za {{ $city }}</h3>
+                <h3 class="mb-0">
+                    Forecast za {{ $city->name }}
+                </h3>
             </div>
 
             <div class="card-body">
 
-                @if($temps === null)
+                @if($forecasts->isEmpty())
+
                     <div class="alert alert-danger">
                         Nema podataka za ovaj grad.
                     </div>
-                @else
-                    <p class="mb-3">Temperatura za narednih 5 dana:</p>
 
-                    <ul class="list-group">
-                        @foreach($temps as $index => $temp)
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                Dan {{ $index + 1 }}
-                                <span class="badge bg-primary rounded-pill">
-                                {{ $temp }}°C
-                            </span>
-                            </li>
+                @else
+
+                    <p class="mb-3">
+                        Prognoza za naredne dane:
+                    </p>
+
+                    <table class="table table-striped">
+
+                        <thead class="table-dark">
+                        <tr>
+                            <th>Datum</th>
+                            <th>Temperatura</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+
+                        @foreach($forecasts as $forecast)
+
+                            <tr>
+                                <td>
+                                    {{ \Carbon\Carbon::parse($forecast->date)->format('d.m.Y') }}
+                                </td>
+
+                                <td>
+                                    {{ $forecast->temperature }}°C
+                                </td>
+                            </tr>
+
                         @endforeach
-                    </ul>
+
+                        </tbody>
+
+                    </table>
+
                 @endif
 
             </div>
+
         </div>
 
     </div>
