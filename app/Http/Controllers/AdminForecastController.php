@@ -34,7 +34,7 @@ class AdminForecastController extends Controller
 
             'temperature' => 'required|numeric',
 
-            'weather_type' => 'required|in:rainy,sunny,snowy',
+            'weather_type' => 'required|in:rainy,sunny,snowy,cloudy',
 
             'date' => 'required|date',
 
@@ -66,6 +66,16 @@ class AdminForecastController extends Controller
             $probability = $request->probability;
         }
 
+        $exists = Forecast::where('city_id', $request->city_id)
+            ->where('date', $request->date)
+            ->exists();
+
+
+        if ($exists) {
+            return back()->withErrors([
+                'date' => 'Za ovaj grad već postoji prognoza za taj datum.'
+            ]);
+        }
 
         Forecast::create([
             'city_id' => $request->city_id,
