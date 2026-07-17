@@ -13,6 +13,11 @@ Route::get('/', function () {
 Route::get('/dashboard', [WeatherController::class, 'index'])
     ->middleware(['auth'])
     ->name('dashboard');
+
+Route::get('/search', [ForecastController::class, 'search'])
+    ->middleware(['auth'])
+    ->name('forecast-search');
+
 Route::get('/forecast/{city:name}', [ForecastController::class, 'index'])
     ->name('forecast');
 

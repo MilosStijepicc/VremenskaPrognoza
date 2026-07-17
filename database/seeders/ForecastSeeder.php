@@ -19,7 +19,7 @@ class ForecastSeeder extends Seeder
 
             $temperature = $faker->numberBetween(-10, 30);
 
-            for ($i = 0; $i < 5; $i++) {
+            for ($i = 0; $i < 30; $i++) {
 
 
                 if ($i > 0) {

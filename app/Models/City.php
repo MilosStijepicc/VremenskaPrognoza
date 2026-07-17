@@ -17,4 +17,10 @@ class City extends Model
         return $this->hasMany(Forecast::class, 'city_id', 'id')
             ->orderBy('date', 'asc');
     }
+
+    public function todaysForecast()
+    {
+        return $this->hasOne(Forecast::class, 'city_id', 'id')
+            ->whereDate("date", today());
+    }
 }

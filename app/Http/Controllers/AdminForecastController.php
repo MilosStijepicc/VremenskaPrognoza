@@ -11,7 +11,7 @@ class AdminForecastController extends Controller
 
     public function index()
     {
-        $cities = City::all();
+        $cities = City::with('forecasts')->get();
 
         $forecasts = Forecast::with('city')
             ->orderBy('date')

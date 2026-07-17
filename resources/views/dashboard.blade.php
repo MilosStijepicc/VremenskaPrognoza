@@ -2,32 +2,46 @@
 
 @section('content')
 
-    <h2 class="mb-4">Weather List</h2>
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
 
-    @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
+                <div class="card shadow-sm">
+                    <div class="card-body">
+
+                        <h5 class="card-title text-center mb-3">
+                            <i class="fas fa-city text-primary"></i> Pretraga grada
+                        </h5>
+
+                        <form action="{{ route('forecast-search') }}" method="GET">
+                            <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </span>
+
+                                <input
+                                    type="text"
+                                    name="city"
+                                    class="form-control"
+                                    placeholder="Unesite ime grada">
+
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-search"></i> Pronađi
+                                </button>
+                            </div>
+                        </form>
+
+                        @if ($errors->has('city'))
+                            <div class="alert alert-danger mt-3">
+                                {{ $errors->first('city') }}
+                            </div>
+                        @endif
+
+                    </div>
+                </div>
+
+            </div>
         </div>
-    @endif
-
-    <table class="table table-striped table-bordered">
-        <thead class="table-dark">
-        <tr>
-            <th>ID</th>
-            <th>City</th>
-            <th>Temperature</th>
-        </tr>
-        </thead>
-
-        <tbody>
-        @foreach($weather as $w)
-            <tr>
-                <td>{{ $w->id }}</td>
-                <td>{{ $w->city->name }}</td>
-                <td>{{ $w->temperature }}°C</td>
-            </tr>
-        @endforeach
-        </tbody>
-    </table>
+    </div>
 
 @endsection
