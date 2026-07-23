@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\City;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ForecastController extends Controller
 {
@@ -19,10 +20,19 @@ class ForecastController extends Controller
     {
         $cityName = trim($request->city);
 
-        if ($cityName === '') {
-            $cities = City::all();
+        $userFavourites = [];
 
-            return view('search-results', compact('cities'));
+        if (Auth::check()) {
+            $userFavourites = Auth::user()
+                ->cityFavourites
+                ->pluck('city_id')
+                ->toArray();
+        }
+
+        if ($cityName === '') {
+            $cities = City::with('todaysForecast')->get();
+
+            return view('search-results', compact('cities', 'userFavourites'));
         }
 
         $cities = City::with('todaysForecast')
@@ -35,6 +45,7 @@ class ForecastController extends Controller
             ]);
         }
 
-        return view('search-results', compact('cities'));
+        return view('search-results', compact('cities', 'userFavourites'));
     }
+
 }

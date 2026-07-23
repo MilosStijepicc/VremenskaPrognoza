@@ -21,6 +21,12 @@ Route::get('/search', [ForecastController::class, 'search'])
 Route::get('/forecast/{city:name}', [ForecastController::class, 'index'])
     ->name('forecast');
 
+Route::get("/user-cities/favourite/{city}", [\App\Http\Controllers\UserCitiesController::class, 'favourite'])
+    ->name("city-favourite");
+
+Route::get("/user-cities/remove/{city}", [\App\Http\Controllers\UserCitiesController::class, 'remove'])
+    ->name("city-remove");
+
 
 Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])->prefix('admin')->group(function () {
 

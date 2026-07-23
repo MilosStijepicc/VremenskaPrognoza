@@ -5,14 +5,24 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Weather;
 use App\Models\City;
+use Illuminate\Support\Facades\Auth;
+
 
 class WeatherController extends Controller
 {
     public function index()
     {
         $weather = Weather::with('city')->get();
-        return view('dashboard', compact('weather'));
+
+        $favouriteCities = auth()->user()
+            ->cityFavourites()
+            ->with('city.todaysForecast')
+            ->get();
+
+        return view('dashboard', compact('weather', 'favouriteCities'));
     }
+
+
 
     public function create()
     {
