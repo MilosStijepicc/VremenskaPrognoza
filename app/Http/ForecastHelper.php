@@ -19,29 +19,26 @@ class ForecastHelper
             return 'green';
         }
 
-        if ($temperature > 25) {
-            return 'red';
-        }
+        return 'red';
     }
 
 
     public static function weatherIcon($weatherType)
     {
-        if ($weatherType == 'sunny') {
-            return 'fa-solid fa-sun text-warning';
+        $icons = [
+            'sunny' => 'fa-solid fa-sun text-warning',
+            'rainy' => 'fa-solid fa-cloud-rain text-primary',
+            'snowy' => 'fa-solid fa-snowflake text-info',
+            'cloudy' => 'fa-solid fa-cloud text-secondary',
+        ];
+
+
+        if (in_array($weatherType, array_keys($icons))) {
+            return $icons[$weatherType];
+        }else{
+            return "fa-solid fa-sun";
         }
 
-        if ($weatherType == 'rainy') {
-            return 'fa-solid fa-cloud-rain text-primary';
-        }
-
-        if ($weatherType == 'snowy') {
-            return 'fa-solid fa-snowflake text-info';
-        }
-
-        if ($weatherType == 'cloudy') {
-            return 'fa-solid fa-cloud text-secondary';
-        }
 
         return '';
     }

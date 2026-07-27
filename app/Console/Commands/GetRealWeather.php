@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Models\City;
+use App\Models\Forecast;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 
@@ -12,7 +14,7 @@ class GetRealWeather extends Command
      *
      * @var string
      */
-    protected $signature = 'weather:get-real';
+    protected $signature = 'weather:get-real {city}';
 
     /**
      * The console command description.
@@ -26,20 +28,63 @@ class GetRealWeather extends Command
      */
     public function handle()
     {
-        //Koristio sam ovaj API key jer ReqRes-ov API key vise ne radi
-        //$url = "https://jsonplaceholder.typicode.com/users";
-        //$response = Http::get($url);
+        $city = $this->argument('city');
 
-        //$jsonResponse = $response->body();
-        //$jsonResponse = (json_decode($jsonResponse, true));
-        //dd($jsonResponse[0]['name']);
+        $existingCity = City::where('name', $city)->first();
 
-        //Ispod je domaci :)
+        if ($existingCity === null)
+        {
+            $existingCity = City::create([
+                'name' => $city
+            ]);
+        }
 
-        $response = Http::get('https://api.weatherapi.com/v1/current.json', [
+        $response = Http::get('https://api.weatherapi.com/v1/forecast.json', [
             'key' => '937e0282b9704fbdbed91139262407',
-            'q' => 'Modrica'
+            'q' => $city,
+            'days' => 5,
         ]);
 
-        dd($response->status(), $response->json()['location']['name'], $response->json()['current']['temp_c']);}
+        $jsonResponse = $response->json();
+
+        if (isset($jsonResponse['error'])) {
+            dd('Nismo pronašli Vaš grad.');
+        }
+
+        //Uspio sam izvuci forecastove za narednih 5 dana, Chat mi je rekao samo da trebam koristiti dump a ne dd hahaha
+        //A ja ko magarac cackam kod koristim dd xD
+
+        //foreach ($response->json()['forecast']['forecastday'] as $day) {
+        // dump(
+        //  $day['date'],
+        // $day['day']['avgtemp_c'],
+        //  $day['day']['condition']['text']
+        //  );
+        // }
+
+        foreach ($jsonResponse['forecast']['forecastday'] as $day) {
+
+            if($existingCity->todaysForecast !== null)
+            {
+                $this->output->comment("Vec postoji ova prognoza");
+                return;
+            }
+
+            $date = $day['date'];
+            $temperature = $day['day']['avgtemp_c'];
+            $weatherType = $day['day']['condition']['text'];
+            $probability = $day['day']['daily_chance_of_rain'];
+
+
+            $forecasts = [
+                "city_id" => $existingCity->id,
+                "temperature" => $temperature,
+                "date" => $date,
+                "weather_type" => strtolower($weatherType), //nek pise malim slovima nervira me xd
+                "probability" => $probability,
+            ];
+            Forecast::create($forecasts);
+            $this->output->comment("Dodata nova prognoza");
+        }
+    }
 }

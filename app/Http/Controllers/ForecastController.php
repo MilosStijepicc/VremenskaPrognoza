@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\City;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 
 class ForecastController extends Controller
@@ -19,6 +20,8 @@ class ForecastController extends Controller
     public function search(Request $request)
     {
         $cityName = trim($request->city);
+
+        Artisan::call('weather:get-real', ['city' => $cityName]);
 
         $userFavourites = [];
 
